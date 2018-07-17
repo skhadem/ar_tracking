@@ -1,0 +1,25 @@
+<launch>
+	<arg name="marker_size" default="20.3" />
+	<arg name="max_new_marker_error" default="0.02" />
+	<arg name="max_track_error" default="0.4" />
+
+	<arg name="cam_image_topic" default="/occam/image0" />
+	<arg name="cam_info_topic" default="/occam/image3/camera_info" />
+	<arg name="output_frame" default="/occam" />
+
+	<node name="ar_track_alvar" pkg="ar_track_alvar" type="individualMarkersNoKinect" respawn="false" output="screen">
+		<param name="marker_size"           type="double" value="$(arg marker_size)" />
+		<param name="max_new_marker_error"  type="double" value="$(arg max_new_marker_error)" />
+		<param name="max_track_error"       type="double" value="$(arg max_track_error)" />
+		<param name="output_frame"          type="string" value="$(arg output_frame)" />
+
+		<remap from="camera_image"  to="$(arg cam_image_topic)" />
+		<remap from="camera_info"   to="$(arg cam_info_topic)" />
+	</node>
+
+	<node name="static_markers_world" pkg="tf" type="static_transform_publisher" args="5.33 -1 0 0 0 0 world marker_bundle 100">
+	</node>
+	<node name="occam_tf_broadcaster" pkg="ar_tracking" type="occam_world_transform.py" respawn="false" output="screen">
+	</node>
+
+</launch>
